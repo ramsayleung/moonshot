@@ -24,14 +24,23 @@ struct ContentView: View {
     let astronauts: [String: Astronaut] = Bundle.main.decode("astronauts.json")
     let missions: [Mission] = Bundle.main.decode("missions.json")
     @State private var showingGrid = false
+    @State private var showingFullMoom = false
     
     var body: some View {
         NavigationView {
             VStack{
                 HStack {
-                    Text("Moonshot")
-                        .font(.title.bold())
-                    Image(systemName: "moon")
+                    Button {
+                        showingFullMoom.toggle()
+                    }
+                    label: {
+                        Text("Moonshot")
+                            .font(.title.bold())
+                            .foregroundStyle(.white)
+                        Image(systemName: showingFullMoom ? "moonphase.full.moon" : "moon.fill")
+                            .foregroundStyle(.white)
+                            .animation(.easeIn(duration: 1), value: showingFullMoom)
+                    }
                 }
                 if showingGrid {
                     GridLayout(astronauts: astronauts, missions: missions)
