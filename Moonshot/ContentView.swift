@@ -19,53 +19,40 @@ struct CustomView: View {
     }
 }
 
+
 struct ContentView: View {
     let astronauts: [String: Astronaut] = Bundle.main.decode("astronauts.json")
     let missions: [Mission] = Bundle.main.decode("missions.json")
-    
-    let layout = [
-        GridItem(.adaptive(minimum: 150)),
-    ]
+    @State private var showingGrid = false
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: layout){
-                    ForEach(missions){ mission in
-                        NavigationLink {
-                            MissionView(mission: mission, astronauts: astronauts)
-                        } label: {
-                            VStack {
-                                Image(mission.imageName)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 100, height: 100)
-                                    .padding()
-                                
-                                VStack {
-                                    Text(mission.displayName)
-                                        .font(.headline)
-                                        .foregroundStyle(.white)
-                                    
-                                    Text(mission.displayLaunchedDate)
-                                        .font(.caption)
-                                        .foregroundStyle(.gray)
-                                }
-                                .padding(.vertical)
-                                .frame(maxWidth: .infinity)
-                                .background(.darkBackground)
-                            }
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .overlay(RoundedRectangle(cornerRadius: 10)
-                                .stroke(.lightBackground))
-                        }
-                    }
+        NavigationView {
+            VStack{
+                HStack {
+                    Text("Moonshot")
+                        .font(.title.bold())
+                    Image(systemName: "moon")
                 }
-                .padding([.horizontal, .bottom])
+                if showingGrid {
+                    GridLayout(astronauts: astronauts, missions: missions)
+                } else {
+                    ListLayout(astronauts: astronauts, missions: missions)
+                }
             }
-            .navigationTitle("Moonshot")
             .background(.darkBackground)
             .preferredColorScheme(.dark)
+            .animation(.easeIn(duration: 2), value: showingGrid)
+            .toolbar {
+                Button {
+                    showingGrid.toggle()
+                } label: {
+                    if showingGrid {
+                        Image(systemName: "list.bullet")
+                    } else{
+                        Image(systemName: "square.grid.2x2")
+                    }
+                }.tint(.white)
+            }
         }
     }
 }
